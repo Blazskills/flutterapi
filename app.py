@@ -98,7 +98,9 @@ def apibible():
     _allOctober = user_schema.dump(allOctober)
     _allNovember = user_schema.dump(allNovember)
     _allDecember = user_schema.dump(allDecember)
-    return jsonify({'Bible': _jsonbible}, {'AllJanuary': _allJanuary}, {'AllFebruary': _allFebruary}, {'AllMarch': _allMarch}, {'AllApril': _allApril}, {'Allmay': _allmay}, {'AllJune': _allJune}, {'AllJuly': _allJuly}, {'AllAugust': _allAugust}, {'AllSeptember': _allSeptember}, {'AllOctober': _allOctober}, {'AllNovember': _allNovember}, {'AllDecember': _allDecember})
+    return jsonify({'Bible': _jsonbible})
+
+    # return jsonify({'Bible': _jsonbible} ,{'AllJanuary': _allJanuary}, {'AllFebruary': _allFebruary}, {'AllMarch': _allMarch}, {'AllApril': _allApril}, {'Allmay': _allmay}, {'AllJune': _allJune}, {'AllJuly': _allJuly}, {'AllAugust': _allAugust}, {'AllSeptember': _allSeptember}, {'AllOctober': _allOctober}, {'AllNovember': _allNovember}, {'AllDecember': _allDecember})
 
 
 
