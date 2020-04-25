@@ -35,14 +35,16 @@ class Bible (db.Model):
     morning = db.Column(db.String(100))
     afternoon = db.Column(db.String(100))
     night = db.Column(db.String(100))
+    bibleday = db.Column(db.Integer)
     today=db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 
-    def __init__(self,  morning, afternoon,night):
+    def __init__(self,  morning, afternoon,night, bibleday):
 
         self.morning = morning
         self.afternoon = afternoon
         self.night = night
+        self.bibleday = bibleday
 
 class months (db.Model):
     id = db.Column (db.Integer, primary_key =True)
@@ -57,7 +59,7 @@ class months (db.Model):
     # !product schema
 class BibleSchema(ma.ModelSchema):
     class Meta:
-        fields = ('id', 'today' ,'month_name', 'month_uid', 'month_id', 'morning','afternoon','night')
+        fields = ('id', 'today' ,'month_name', 'month_uid', 'month_id', 'morning','afternoon','night','bibleday')
         
 
 
@@ -98,14 +100,58 @@ def apibible():
     _allOctober = user_schema.dump(allOctober)
     _allNovember = user_schema.dump(allNovember)
     _allDecember = user_schema.dump(allDecember)
-    return jsonify({'Bible': _jsonbible})
-
-    # return jsonify({'Bible': _jsonbible} ,{'AllJanuary': _allJanuary}, {'AllFebruary': _allFebruary}, {'AllMarch': _allMarch}, {'AllApril': _allApril}, {'Allmay': _allmay}, {'AllJune': _allJune}, {'AllJuly': _allJuly}, {'AllAugust': _allAugust}, {'AllSeptember': _allSeptember}, {'AllOctober': _allOctober}, {'AllNovember': _allNovember}, {'AllDecember': _allDecember})
-
-
+    return jsonify({'AllApril': _allApril})
+    # return jsonify({'Bible': _jsonbible})
+    # return jsonify({'Bible': _jsonbible}, {'AllJanuary': _allJanuary}, {'AllFebruary': _allFebruary}, {'AllMarch': _allMarch}, {'AllApril': _allApril}, {'Allmay': _allmay}, {'AllJune': _allJune}, {'AllJuly': _allJuly}, {'AllAugust': _allAugust}, {'AllSeptember': _allSeptember}, {'AllOctober': _allOctober}, {'AllNovember': _allNovember}, {'AllDecember': _allDecember})
 
 
 
+# !Get all products
+@app.route('/apibibleall', methods=['GET'])
+def apibibleall():
+    jsonbible = Bible.query.all()
+    allJanuary = Bible.query.filter_by(month_name='January').all()
+    allFebruary = Bible.query.filter_by(month_name='February').all()
+    allMarch = Bible.query.filter_by(month_name='March').all()
+    allApril = Bible.query.filter_by(month_name='April').all()
+    allMay = Bible.query.filter_by(month_name='May').all()
+    allJune = Bible.query.filter_by(month_name='June').all()
+    allJuly = Bible.query.filter_by(month_name='July').all()
+    allAugust = Bible.query.filter_by(month_name='August').all()
+    allSeptember = Bible.query.filter_by(month_name='September ').all()
+    allOctober = Bible.query.filter_by(month_name='October').all()
+    allNovember = Bible.query.filter_by(month_name='November').all()
+    allDecember = Bible.query.filter_by(month_name='December ').all()
+    user_schema = BibleSchema(many=True)
+    _jsonbible = user_schema.dump(jsonbible)
+    _allJanuary = user_schema.dump(allJanuary)
+    _allFebruary = user_schema.dump(allFebruary)
+    _allMarch = user_schema.dump(allMarch)
+    _allApril = user_schema.dump(allApril)
+    _allmay = user_schema.dump(allMay)
+    _allJune = user_schema.dump(allJune)
+    _allJuly = user_schema.dump(allJuly)
+    _allAugust = user_schema.dump(allAugust)
+    _allSeptember = user_schema.dump(allSeptember)
+    _allOctober = user_schema.dump(allOctober)
+    _allNovember = user_schema.dump(allNovember)
+    _allDecember = user_schema.dump(allDecember)
+    return jsonify({'Bible': _jsonbible}, {'AllJanuary': _allJanuary}, {'AllFebruary': _allFebruary}, {'AllMarch': _allMarch}, {'AllApril': _allApril}, {'Allmay': _allmay}, {'AllJune': _allJune}, {'AllJuly': _allJuly}, {'AllAugust': _allAugust}, {'AllSeptember': _allSeptember}, {'AllOctober': _allOctober}, {'AllNovember': _allNovember}, {'AllDecember': _allDecember})
+    # return jsonify({'AllApril': _allApril})
+    # return jsonify({'Bible': _jsonbible})
+
+
+
+
+# !delete user from the database
+@app.route("/apibibledel/<id>",methods=['DELETE'])
+def apibibledel(id):
+    bibledel = Bible.query.get(id)
+    if bibledel:
+        db.session.delete(bibledel)
+        db.session.commit()
+        return jsonify({'Message' : "Bible Verse deleted"})
+    return jsonify({'Message' : "Id does not exist to be deleted"})
 
 
 @app.route('/month',  methods=['GET','POST'])
@@ -138,24 +184,28 @@ def month():
 
 
 
-@app.route('/bible',  methods=['GET','POST'])
+@app.route('/',  methods=['GET','POST'])
 def bible():
     if request.method =='POST':
         biblemonth = request.form['biblemonth']
         morning = request.form['morning']
         afternoon = request.form['afternoon']
         night = request.form['night']
+        bibleday = request.form['bibleday']
         biblepg = months.query.filter_by(month=biblemonth).first()
-        if biblepg:
-            new_bible = Bible(morning,afternoon,night)
-            db.session.add(new_bible)
-            new_bible.month_name = biblepg.month
-            new_bible.month_id = biblepg.id
-            new_bible.month_uid = str(uuid.uuid4())[:8]
-            db.session.commit()
-            return render_template('biblepg.html', message='Created Successfully')   
+        if db.session.query(Bible).filter(Bible.bibleday == bibleday).count()== 0:
+            if biblepg:
+                new_bible = Bible(morning,afternoon,night,bibleday)
+                db.session.add(new_bible)
+                new_bible.month_name = biblepg.month
+                new_bible.month_id = biblepg.id
+                new_bible.month_uid = str(uuid.uuid4())[:8]
+                db.session.commit()
+                return render_template('biblepg.html', message='Created Successfully')   
+            else:
+                return render_template('biblepg.html', message='Wrong Month Input')
         else:
-            return render_template('biblepg.html', message='Wrong Month Input')
+            return render_template('biblepg.html', message= bibleday + ' ' + ' ' "Already Existed")  
     return render_template('biblepg.html')
 
 

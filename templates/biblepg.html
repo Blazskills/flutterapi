@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Contact V10</title>
+	<title>Bible Verses Uploading V10</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->
@@ -34,12 +34,16 @@
 		<div class="wrap-contact100">
 			<form class="contact100-form validate-form"   method='post' action="{{url_for('bible')}}">
 				<span class="contact100-form-title">
-					Send Us A Message
+					Send Us Bible Verses
 				</span>
 				
 
 				<div class="wrap-input100 validate-input" data-validate="Please enter Month">
 					<input class="input100" type="text" name="biblemonth" placeholder="Enter Month">
+					<span class="focus-input100"></span>
+				</div>
+				<div class="wrap-input100 validate-input" data-validate="Please Bible Day">
+					<input class="input100" type="number"  min="1" max="31"  name="bibleday" placeholder="Enter Bible Day">
 					<span class="focus-input100"></span>
 				</div>
 				<div class="wrap-input100 validate-input" data-validate="Please Enter Bible Verse">
